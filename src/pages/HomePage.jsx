@@ -25,10 +25,9 @@ export default function HomePage() {
   // --- Styles (inline for speed) ---
   const pageStyle = { 
   padding: '20px',
-  minHeight: '100vh',
   display: 'flex',
   flexDirection: 'column',
-  justifyContent: 'center', 
+  justifyContent: 'center',
   alignItems: 'center',
 };
 
