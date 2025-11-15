@@ -23,13 +23,22 @@ export default function HomePage() {
   };
 
   // --- Styles (inline for speed) ---
-  const pageStyle = { padding: '20px' };
-  const formStyle = {
+  const pageStyle = { 
+  padding: '20px',
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  alignItems: 'center',
+};
+
+const formStyle = {
   border: '1px solid #ccc',
   borderRadius: '8px',
   padding: '20px',
   marginBottom: '20px',
-}
+  width: '300px',
+  textAlign: 'center',
+};
   const inputStyle = { padding: '8px', marginRight: '10px' };
   const buttonStyle = { padding: '8px 12px', cursor: 'pointer' };
 
