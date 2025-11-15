@@ -1,35 +1,47 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React from 'react';
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import LoginPage from './pages/LoginPage';
+import HomePage from './pages/HomePage';
+import LeaguePage from './pages/LeaguePage';
+import DraftPage from './pages/DraftPage';
 
-function App() {
-  const [count, setCount] = useState(0)
+// A simple Navbar to help you test navigation
+function NavBar() {
+  // Simple inline styles for the nav
+  const navStyle = {
+    padding: '10px',
+    backgroundColor: '#f0f0f0',
+    borderBottom: '1px solid #ccc',
+    marginBottom: '20px',
+  };
+  const linkStyle = {
+    margin: '0 10px',
+    textDecoration: 'none',
+    fontWeight: 'bold',
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <nav style={navStyle}>
+      <Link to="/" style={linkStyle}>Home (Leagues)</Link>
+      <Link to="/league/test123" style={linkStyle}>My League</Link>
+      <Link to="/league/test123/draft" style={linkStyle}>Draft Page</Link>
+      <Link to="/login" style={linkStyle}>Login</Link>
+    </nav>
+  );
 }
 
-export default App
+function App() {
+  return (
+    <BrowserRouter>
+      <NavBar /> {/* Add the nav bar to every page */}
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/" element={<HomePage />} />
+        <Route path="/league/:leagueId" element={<LeaguePage />} />
+        <Route path="/league/:leagueId/draft" element={<DraftPage />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+export default App;
