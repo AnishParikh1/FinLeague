@@ -9,6 +9,9 @@ import DraftPage from './pages/DraftPage.jsx';
 // 1. Import the hook
 import { useAuth } from './AuthContext.jsx';
 
+// ADD THIS IMPORT
+import { logOut } from './firebaseServices.js';
+
 // This is a new component to protect your routes
 function ProtectedRoute({ children }) {
   const { currentUser } = useAuth();
@@ -69,12 +72,48 @@ function App() {
   );
 }
 
-// (Your NavBar component can stay the same)
+
 function NavBar() {
-  // ... (your nav bar code) ...
+  // Simple inline styles for the nav
+  const navStyle = {
+    padding: '10px 20px', // Added more padding
+    backgroundColor: '#f0f0f0',
+    borderBottom: '1px solid #ccc',
+    marginBottom: '20px',
+    display: 'flex',
+    justifyContent: 'space-between', // This splits items
+    alignItems: 'center',       // This centers them vertically
+  };
+  
+  const linkStyle = {
+    margin: '0 10px',
+    textDecoration: 'none',
+    fontWeight: 'bold',
+    color: '#333',
+  };
+  
+  const buttonStyle = {
+    background: 'none',
+    border: 'none',
+    color: 'blue',
+    cursor: 'pointer',
+    textDecoration: 'underline',
+    fontSize: '1em', // Makes it match text size
+    fontWeight: 'bold',
+  };
+
   return (
-    <nav>
-      {/* ... your links ... */}
+    <nav style={navStyle}>
+      <div>
+        <Link to="/" style={linkStyle}>Home</Link>
+        {/* You'll need to make this link dynamic later */}
+        <Link to="/league/test123" style={linkStyle}>My League</Link>
+      </div>
+      
+      {/* ADD THIS BUTTON */}
+      <button style={buttonStyle} onClick={logOut}>
+        Log Out
+      </button>
     </nav>
   );
 }
