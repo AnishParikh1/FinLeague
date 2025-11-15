@@ -10,7 +10,7 @@ import DraftPage from './pages/DraftPage.jsx';
 import { useAuth } from './AuthContext.jsx';
 
 // ADD THIS IMPORT
-import { logOut } from './firebaseServices.js';
+import { logOut } from './firebaseService.js';
 
 // This is a new component to protect your routes
 function ProtectedRoute({ children }) {
