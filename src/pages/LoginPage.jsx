@@ -1,6 +1,25 @@
 import React from 'react';
+// --- ADD THESE IMPORTS ---
+import { useNavigate } from 'react-router-dom';
+import { signInWithGoogle } from '../firebaseService.js'; // Note the path
+import { createUserDocument } from '../firebaseService.js';
 
 export default function LoginPage() {
+
+
+  // --- REPLACE YOUR FAKE handleLogin ---
+const handleLogin = async () => {
+    try {
+      const result = await signInWithGoogle();
+      if (result && result.user) {
+        await createUserDocument(result.user);
+      }
+      // NO MORE navigate('/') HERE!
+    } catch (error) {
+      console.error("Sign-in failed", error);
+    }
+  };
+  
   // Simple inline styles for centering
   const pageStyle = {
     display: 'flex',
@@ -20,12 +39,6 @@ export default function LoginPage() {
     border: 'none',
     borderRadius: '4px',
     cursor: 'pointer',
-  };
-
-  // This is the placeholder function
-  const handleLogin = () => {
-    console.log('TODO: Call signInWithGoogle()');
-    // After login, you'll redirect the user
   };
 
   return (
