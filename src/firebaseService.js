@@ -1,4 +1,4 @@
-// src/firebaseServices.js
+// src/firebaseService.js
 import { initializeApp } from "firebase/app";
 import { 
   getAuth, 
@@ -16,7 +16,9 @@ import {
   updateDoc, 
   arrayUnion, 
   serverTimestamp,
-  getDocs 
+  getDocs,
+  query,  // <-- ADDED
+  where   // <-- ADDED
 } from 'firebase/firestore';
 
 // 1. YOUR FIREBASE CONFIG
@@ -35,6 +37,7 @@ export const auth = getAuth(app);
 export const db = getFirestore(app);
 
 // 3. AUTH FUNCTIONS
+// ... (signInWithGoogle, logOut) ...
 const provider = new GoogleAuthProvider();
 export const signInWithGoogle = () => {
   return signInWithPopup(auth, provider);
@@ -43,7 +46,9 @@ export const logOut = () => {
   return signOut(auth);
 };
 
+
 // 4. USER FUNCTIONS
+// ... (createUserDocument) ...
 export const createUserDocument = async (user) => {
   if (!user) return;
   const userRef = doc(db, 'users', user.uid);
@@ -64,8 +69,9 @@ export const createUserDocument = async (user) => {
   }
 };
 
-// 5. LEAGUE & PORTFOLIO FUNCTIONS
 
+// 5. LEAGUE & PORTFOLIO FUNCTIONS
+// ... (createLeague, joinLeague, addStockToPortfolio, getLeaguePortfolios) ...
 export const createLeague = async (leagueName, user) => {
   if (!leagueName || !user) return;
   try {
@@ -125,6 +131,30 @@ export const getLeaguePortfolios = async (leagueId) => {
     return portfolios;
   } catch (error) {
     console.error("Error getting league portfolios:", error);
+    return [];
+  }
+};
+
+// 6. NEW FUNCTION TO GET A USER'S LEAGUES
+export const getUserLeagues = async (userId) => {
+  if (!userId) return [];
+  try {
+    const leaguesRef = collection(db, 'leagues');
+    // Create a query against the collection
+    const q = query(leaguesRef, where("members", "array-contains", userId));
+
+    const querySnapshot = await getDocs(q);
+    const leagues = [];
+    querySnapshot.forEach((doc) => {
+      // doc.data() is never undefined for query doc snapshots
+      leagues.push({
+        id: doc.id,
+        ...doc.data()
+      });
+    });
+    return leagues;
+  } catch (error) {
+    console.error("Error getting user's leagues:", error);
     return [];
   }
 };
