@@ -1,49 +1,41 @@
-// src/App.jsx
-
 import React from 'react';
 import { BrowserRouter, Routes, Route, Link, Navigate } from 'react-router-dom';
+
+// Page Imports
 import LoginPage from './pages/LoginPage.jsx';
 import HomePage from './pages/HomePage.jsx';
 import LeaguePage from './pages/LeaguePage.jsx';
 import DraftPage from './pages/DraftPage.jsx';
-import ProfilePage from './pages/ProfilePage.jsx';
-// 1. Import the hook
-import { useAuth } from './AuthContext.jsx';
+import ProfilePage from './pages/ProfilePage.jsx'; 
 
-// ADD THIS IMPORT
+// Auth Imports
+import { useAuth } from './AuthContext.jsx';
 import { logOut } from './firebaseService.js';
 
-// This is a new component to protect your routes
+// ... (ProtectedRoute component is here) ...
 function ProtectedRoute({ children }) {
   const { currentUser } = useAuth();
   if (!currentUser) {
-    // If no user, redirect to login
     return <Navigate to="/login" />;
   }
   return children;
 }
 
+
 function App() {
-  // 2. Get the current user from the context
   const { currentUser } = useAuth();
 
   return (
     <BrowserRouter>
-      {/* 3. Only show the Nav Bar if the user is logged in */}
       {currentUser && <NavBar />}
       
       <Routes>
-        {/* 4. The Login page is special */}
         <Route 
           path="/login" 
           element={
             currentUser ? <Navigate to="/" /> : <LoginPage />
-            // If user IS logged in, redirect to home
-            // If user is NOT logged in, show LoginPage
           } 
         />
-        
-        {/* 5. Wrap your private pages in the ProtectedRoute */}
         <Route 
           path="/" 
           element={
@@ -68,22 +60,31 @@ function App() {
             </ProtectedRoute>
           } 
         />
+
+        <Route 
+          path="/profile" 
+          element={
+            <ProtectedRoute>
+              <ProfilePage />
+            </ProtectedRoute>
+          } 
+        />
+
       </Routes>
     </BrowserRouter>
   );
 }
 
-
+// --- UPDATED NAVBAR FUNCTION ---
 function NavBar() {
-  // Simple inline styles for the nav
   const navStyle = {
-    padding: '10px 20px', // Added more padding
+    padding: '10px 20px',
     backgroundColor: '#f0f0f0',
     borderBottom: '1px solid #ccc',
     marginBottom: '20px',
     display: 'flex',
-    justifyContent: 'space-between', // This splits items
-    alignItems: 'center',       // This centers them vertically
+    justifyContent: 'space-between', // Pushes left and right sides apart
+    alignItems: 'center',
   };
   
   const linkStyle = {
@@ -92,6 +93,11 @@ function NavBar() {
     fontWeight: 'bold',
     color: '#333',
   };
+
+  const navRightStyle = { // New style for the right-hand group
+    display: 'flex',
+    alignItems: 'center',
+  };
   
   const buttonStyle = {
     background: 'none',
@@ -99,23 +105,25 @@ function NavBar() {
     color: 'blue',
     cursor: 'pointer',
     textDecoration: 'underline',
-    fontSize: '1em', // Makes it match text size
+    fontSize: '1em',
     fontWeight: 'bold',
+    marginLeft: '15px', // Adds space between "Profile" and "Log Out"
   };
 
   return (
     <nav style={navStyle}>
+      {/* --- Left Side --- */}
       <div>
         <Link to="/" style={linkStyle}>Home</Link>
-        {/* You'll need to make this link dynamic later */}
-        <Link to="/league/test123" style={linkStyle}>My League</Link>
-        <Link to="/profile" style={linkStyle}>Profile</Link>
       </div>
       
-      {/* ADD THIS BUTTON */}
-      <button style={buttonStyle} onClick={logOut}>
-        Log Out
-      </button>
+      {/* --- Right Side --- */}
+      <div style={navRightStyle}>
+        <Link to="/profile" style={linkStyle}>Profile</Link>
+        <button style={buttonStyle} onClick={logOut}>
+          Log Out
+        </button>
+      </div>
     </nav>
   );
 }
