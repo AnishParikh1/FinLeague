@@ -134,7 +134,6 @@ export default function DraftPage() {
           style={{ width: '100%', padding: '8px', fontSize: '16px' }}
           disabled={!isDraftOpen} // <-- Disable if draft is closed
         />
-        <h3>Search Results</h3>
         <div>
           {results.map(stock => (
             <div key={stock.symbol} className="item-box">
@@ -157,7 +156,11 @@ export default function DraftPage() {
       </div>
 
       <div style={columnStyle}>
-        <h3>Your Current Portfolio</h3>
+        <h3>Your Current Portfolio <span style="float;right;">
+          <Link to={`/league/${leagueId}`} style={{marginLeft: '10px'}}>
+              See Leaderboard
+          </Link></span>
+        </h3>
         {/* We already handled loading above, so we can remove it here */}
         <div>
           {portfolio.map(stock => (
@@ -182,9 +185,7 @@ export default function DraftPage() {
 // ... (portfolio full message) ...
           <div style={{marginTop: '20px', color: 'green', fontWeight: 'bold'}}>
             Your portfolio is full!
-            <Link to={`/league/${leagueId}`} style={{marginLeft: '10px'}}>
-              See Leaderboard
-            </Link>
+            
           </div>
         )}
       </div>

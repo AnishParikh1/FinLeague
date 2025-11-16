@@ -85,10 +85,10 @@ export default function HomePage() {
       ) : (
         <div style={{ marginBottom: '20px' }}>
           {myLeagues.length === 0 ? (
-            <p>You haven't joined any leagues yet.</p>
+            <p class="gradient-text">You haven't joined any leagues yet.</p>
           ) : (
             myLeagues.map(league => (
-              <Link to={`/league/${league.id}`} key={league.id} style={leagueLinkStyle}>
+              <Link to={`/league/${league.id}`} key={league.id} class="gradient-text">
                 {league.name}
               </Link>
             ))

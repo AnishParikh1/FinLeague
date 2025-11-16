@@ -118,8 +118,8 @@ function NavBar() {
       
       {/* --- Right Side --- */}
       <div style={navRightStyle}>
+        
         <Link to="/profile" style={linkStyle}>Profile</Link>
-
         <button style={buttonStyle} onClick={logOut}>
           Log Out
         </button>
