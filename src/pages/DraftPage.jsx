@@ -137,7 +137,6 @@ export default function DraftPage() {
         />
         <h3>Search Results</h3>
         <div>
-// ... (results.map) ...
           {results.map(stock => (
             <div key={stock.symbol} className="item-box">
               {/* --- UPDATED THIS BLOCK --- */}
@@ -162,7 +161,6 @@ export default function DraftPage() {
         <h3>Your Current Portfolio</h3>
         {/* We already handled loading above, so we can remove it here */}
         <div>
-// ... (portfolio.map) ...
           {portfolio.map(stock => (
             <div key={stock.symbol} className="item-box">
               {/* --- UPDATED THIS BLOCK --- */}

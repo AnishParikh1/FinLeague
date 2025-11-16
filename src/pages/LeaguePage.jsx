@@ -205,7 +205,6 @@ export default function LeaguePage() {
       )}
 
       <ol style={{listStyleType: 'none', padding: 0}}>
-// ... (leaderboard.map logic) ...
         {leaderboard.map((player, index) => (
           <li key={player.userId} className="item-box">
             <span>{index + 1}. {player.name} ({player.stockCount} stocks)</span>
