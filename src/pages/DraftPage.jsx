@@ -1,23 +1,34 @@
-import React, { useState, useEffect } from 'react'; // 1. Add useEffect
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { auth, db } from '../firebaseService.js'; // 2. Import 'db' (singular)
-import { getStockQuote, searchStock } from '../finnhubService.js';
-import { addStockToPortfolio } from '../firebaseService.js'; // (singular)
-import { doc, getDoc } from 'firebase/firestore'; // 3. Import getDoc
+import { auth, db, getLeagueDetails, addStockToPortfolio } from '../firebaseService.js';
+import { getStockQuote, searchStock } from '../finnhubService.js'; // <-- This import will now work
+import { doc, getDoc } from 'firebase/firestore';
+import { useAuth } from '../AuthContext.jsx';
 
 export default function DraftPage() {
-  const { leagueId } = useParams(); // Gets 'test123' from the URL
+  const { leagueId } = useParams();
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
-  const [portfolio, setPortfolio] = useState([]); // 4. Start with empty portfolio
-  const [loading, setLoading] = useState(true); // 5. Add loading state
-  const { currentUser } = useAuth(); // 6. Get current user
+  const [portfolio, setPortfolio] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const { currentUser } = useAuth();
+  const [isDraftOpen, setIsDraftOpen] = useState(false); // <-- NEW: Track draft status
 
-  // 7. Add useEffect to fetch portfolio on load
+  // 7. Add useEffect to fetch portfolio AND league status on load
   useEffect(() => {
-    const fetchPortfolio = async () => {
+    const fetchPageData = async () => {
       if (currentUser && leagueId) {
         setLoading(true);
+        
+        // 1. Fetch League Status
+        const leagueData = await getLeagueDetails(leagueId);
+        if (leagueData && leagueData.status === 'DRAFT_OPEN') {
+          setIsDraftOpen(true);
+        } else {
+          setIsDraftOpen(false);
+        }
+        
+        // 2. Fetch Portfolio
         const portfolioRef = doc(db, 'leagues', leagueId, 'portfolios', currentUser.uid);
         const docSnap = await getDoc(portfolioRef);
         
@@ -29,7 +40,7 @@ export default function DraftPage() {
         setLoading(false);
       }
     };
-    fetchPortfolio();
+    fetchPageData();
   }, [leagueId, currentUser]); // Re-run if these change
 
   const handleSearchChange = async (e) => {
@@ -45,15 +56,13 @@ export default function DraftPage() {
   };
 
   const handleAddStock = async (stock) => {
-    if (!currentUser) return; // Make sure user is logged in
+    if (!currentUser) return;
     
-    // Check if portfolio is full
+// ... (portfolio checks) ...
     if (portfolio.length >= 10) {
       alert("Your portfolio is full! You must remove a stock to add another.");
       return;
     }
-    
-    // Check if stock is already in portfolio
     if (portfolio.find(s => s.symbol === stock.symbol)) {
       alert(`${stock.symbol} is already in your portfolio.`);
       return;
@@ -71,11 +80,13 @@ export default function DraftPage() {
         purchasePrice: quote.current
       };
       
-      // 3. Save it to Firebase (this will 'arrayUnion')
-      await addStockToPortfolio(leagueId, currentUser.uid, stockToAdd);
+      // 3. Save it to Firebase (this will now check status on the backend)
+      const success = await addStockToPortfolio(leagueId, currentUser.uid, stockToAdd);
       
-      // 4. Update local state
-      setPortfolio([...portfolio, stockToAdd]);
+      // 4. Update local state ONLY if save was successful
+      if (success) {
+        setPortfolio([...portfolio, stockToAdd]);
+      }
     } catch (error) {
       console.error("Error adding stock: ", error);
       alert("Failed to add stock. Please try again.");
@@ -90,11 +101,28 @@ export default function DraftPage() {
   };
 
   // --- Styles ---
+// ... (pageStyle, columnStyle, buttonStyle) ...
   const pageStyle = { padding: '20px', display: 'flex', gap: '40px' };
   const columnStyle = { flex: 1 };
   const buttonStyle = { padding: '4px 8px', cursor: 'pointer' };
   // item-box style is now in index.css
 
+  // --- NEW: Show loading message ---
+  if (loading) {
+    return <div style={pageStyle}>Loading draft...</div>
+  }
+
+  // --- NEW: Show "Draft Closed" message ---
+  if (!isDraftOpen) {
+    return (
+      <div style={pageStyle}>
+        <h2>The draft for this league is currently closed.</h2>
+        <Link to={`/league/${leagueId}`}>Back to League Page</Link>
+      </div>
+    )
+  }
+
+  // --- Render the main page if draft is open ---
   return (
     <div style={pageStyle}>
       <div style={columnStyle}>
@@ -105,13 +133,19 @@ export default function DraftPage() {
           value={query}
           onChange={handleSearchChange}
           style={{ width: '100%', padding: '8px', fontSize: '16px' }}
+          disabled={!isDraftOpen} // <-- Disable if draft is closed
         />
         <h3>Search Results</h3>
         <div>
+// ... (results.map) ...
           {results.map(stock => (
             <div key={stock.symbol} className="item-box">
               <span>{stock.name} ({stock.symbol})</span>
-              <button style={buttonStyle} onClick={() => handleAddStock(stock)}>
+              <button 
+                style={buttonStyle} 
+                onClick={() => handleAddStock(stock)}
+                disabled={!isDraftOpen} // <-- Disable if draft is closed
+              >
                 Add
               </button>
             </div>
@@ -121,21 +155,24 @@ export default function DraftPage() {
 
       <div style={columnStyle}>
         <h3>Your Current Portfolio</h3>
-        {loading ? (
-          <p>Loading portfolio...</p>
-        ) : (
-          <div>
-            {portfolio.map(stock => (
-              <div key={stock.symbol} className="item-box">
-                <span>{stock.name} ({stock.symbol})</span>
-                <button style={{...buttonStyle, backgroundColor: '#fdd'}} onClick={() => handleRemoveStock(stock.symbol)}>
-                  Remove
-                </button>
-              </div>
-            ))}
+        {/* We already handled loading above, so we can remove it here */}
+        <div>
+// ... (portfolio.map) ...
+          {portfolio.map(stock => (
+            <div key={stock.symbol} className="item-box">
+              <span>{stock.name} ({stock.symbol})</span>
+              <button 
+                style={{...buttonStyle, backgroundColor: '#fdd'}} 
+                onClick={() => handleRemoveStock(stock.symbol)}
+                disabled={!isDraftOpen} // <-- Disable if draft is closed
+              >
+                Remove
+              </button>
+            </div>
+          ))}
           </div>
-        )}
         {portfolio.length === 10 && (
+// ... (portfolio full message) ...
           <div style={{marginTop: '20px', color: 'green', fontWeight: 'bold'}}>
             Your portfolio is full!
             <Link to={`/league/${leagueId}`} style={{marginLeft: '10px'}}>

@@ -37,7 +37,7 @@ export const auth = getAuth(app);
 export const db = getFirestore(app);
 
 // 3. AUTH FUNCTIONS
-const provider = new GoogleAuthProvider();
+const provider = new GoogleAuthProvider(); // <-- THIS LINE WAS MISSING
 export const signInWithGoogle = () => {
   return signInWithPopup(auth, provider);
 };
@@ -47,7 +47,8 @@ export const logOut = () => {
 
 
 // 4. USER FUNCTIONS
-export const createUserDocument = async (user) => {
+// --- THIS FUNCTION WAS BROKEN ---
+export const createUserDocument = async (user) => { // <-- THIS LINE WAS MISSING
   if (!user) return;
   const userRef = doc(db, 'users', user.uid);
   const snapshot = await getDoc(userRef);
@@ -66,6 +67,7 @@ export const createUserDocument = async (user) => {
     }
   }
 };
+// --- END OF FIX ---
 
 /**
  * Updates a user's profile information in the 'users' collection.
@@ -89,7 +91,6 @@ export const updateUserProfile = async (userId, data) => {
 
 // 5. LEAGUE & PORTFOLIO FUNCTIONS
 
-// THIS LINE (86) IS THE FIX:
 export const createLeague = async (leagueName, user) => {
   if (!leagueName || !user) return;
   try {
@@ -98,6 +99,7 @@ export const createLeague = async (leagueName, user) => {
       commissionerId: user.uid,
       members: [user.uid],
       createdAt: serverTimestamp(),
+      status: 'PRE_DRAFT' // <-- ADD THIS: Set initial draft status
     });
     return leagueRef.id; // This ID is the "Invite Code"
   } catch (error) {
@@ -121,16 +123,30 @@ export const joinLeague = async (leagueId, user) => {
   }
 };
 
+// --- UPDATED THIS FUNCTION ---
 export const addStockToPortfolio = async (leagueId, userId, stock) => {
-  if (!leagueId || !userId || !stock) return;
+  if (!leagueId || !userId || !stock) return false;
+
+  const leagueRef = doc(db, 'leagues', leagueId);
   const portfolioRef = doc(db, 'leagues', leagueId, 'portfolios', userId);
+
   try {
+    // 1. Check the league's status BEFORE adding a stock
+    const leagueSnap = await getDoc(leagueRef);
+    if (!leagueSnap.exists() || leagueSnap.data().status !== 'DRAFT_OPEN') {
+      alert("The draft is not currently open!");
+      return false; // Stop the function
+    }
+
+    // 2. If draft is open, proceed with adding the stock
     await setDoc(portfolioRef, {
       stocks: arrayUnion(stock)
-    }, { merge: true }); // merge:true creates doc if it doesn't exist
+    }, { merge: true });
     console.log("Stock added!");
+    return true; // Return success
   } catch (error) {
     console.error("Error adding stock:", error);
+    return false; // Return failure
   }
 };
 
@@ -174,5 +190,46 @@ export const getUserLeagues = async (userId) => {
   } catch (error) {
     console.error("Error getting user's leagues:", error);
     return [];
+  }
+};
+
+// --- ADD THESE 2 NEW FUNCTIONS ---
+
+/**
+ * Gets all details for a single league (like its status).
+ * @param {string} leagueId - The ID of the league.
+ */
+export const getLeagueDetails = async (leagueId) => {
+  if (!leagueId) return null;
+  try {
+    const leagueRef = doc(db, 'leagues', leagueId);
+    const leagueSnap = await getDoc(leagueRef);
+    
+    if (leagueSnap.exists()) {
+      return leagueSnap.data();
+    } else {
+      return null;
+    }
+  } catch (error) {
+    console.error("Error getting league details:", error);
+    return null;
+  }
+};
+
+/**
+ * Updates the status of a league (commissioner only).
+ * @param {string} leagueId - The ID of the league.
+ * @param {string} newStatus - The new status ('PRE_DRAFT', 'DRAFT_OPEN', 'DRAFT_CLOSED').
+ */
+export const updateLeagueStatus = async (leagueId, newStatus) => {
+  if (!leagueId || !newStatus) return;
+  try {
+    const leagueRef = doc(db, 'leagues', leagueId);
+    await updateDoc(leagueRef, {
+      status: newStatus
+    });
+    console.log("League status updated!");
+  } catch (error) {
+    console.error("Error updating league status:", error);
   }
 };
