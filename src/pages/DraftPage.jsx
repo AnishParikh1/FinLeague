@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { auth, db, getLeagueDetails, addStockToPortfolio } from '../firebaseService.js';
-import { getStockQuote, searchStock } from '../finnhubService.js'; // <-- This import will now work
+import { getStockQuote, searchStock } from '../finnhubService.js';
 import { doc, getDoc } from 'firebase/firestore';
 import { useAuth } from '../AuthContext.jsx';
 
@@ -12,53 +12,48 @@ export default function DraftPage() {
   const [portfolio, setPortfolio] = useState([]);
   const [loading, setLoading] = useState(true);
   const { currentUser } = useAuth();
-  const [isDraftOpen, setIsDraftOpen] = useState(false); // <-- NEW: Track draft status
+  const [isDraftOpen, setIsDraftOpen] = useState(false);
 
-  // 7. Add useEffect to fetch portfolio AND league status on load
+  // NEW POPUP STATE
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+
   useEffect(() => {
     const fetchPageData = async () => {
       if (currentUser && leagueId) {
         setLoading(true);
-        
-        // 1. Fetch League Status
+
         const leagueData = await getLeagueDetails(leagueId);
-        if (leagueData && leagueData.status === 'Open') {
-          setIsDraftOpen(true);
-        } else {
-          setIsDraftOpen(false);
-        }
-        
-        // 2. Fetch Portfolio
+        setIsDraftOpen(leagueData && leagueData.status === 'Open');
+
         const portfolioRef = doc(db, 'leagues', leagueId, 'portfolios', currentUser.uid);
         const docSnap = await getDoc(portfolioRef);
-        
+
         if (docSnap.exists() && docSnap.data().stocks) {
           setPortfolio(docSnap.data().stocks);
         } else {
-          setPortfolio([]); // User has no portfolio yet
+          setPortfolio([]);
         }
         setLoading(false);
       }
     };
     fetchPageData();
-  }, [leagueId, currentUser]); // Re-run if these change
+  }, [leagueId, currentUser]);
 
   const handleSearchChange = async (e) => {
     const newQuery = e.target.value;
     setQuery(newQuery);
-    
+
     if (newQuery.length > 0) {
-      const searchResults = await searchStock(newQuery); // Call real API
+      const searchResults = await searchStock(newQuery);
       setResults(searchResults);
     } else {
-      setResults([]); // Clear results on empty
+      setResults([]);
     }
   };
 
   const handleAddStock = async (stock) => {
     if (!currentUser) return;
-    
-// ... (portfolio checks) ...
+
     if (portfolio.length >= 10) {
       alert("Your portfolio is full! You must remove a stock to add another.");
       return;
@@ -69,21 +64,17 @@ export default function DraftPage() {
     }
 
     try {
-      // 1. Get the current price
       const quote = await getStockQuote(stock.symbol);
       if (!quote) throw new Error("Could not get stock price");
 
-      // 2. Create the stock object
       const stockToAdd = {
         symbol: stock.symbol,
-        name: stock.name, // Get name from the search result 'stock' object
+        name: stock.name,
         purchasePrice: quote.current
       };
-      
-      // 3. Save it to Firebase (this will now check status on the backend)
+
       const success = await addStockToPortfolio(leagueId, currentUser.uid, stockToAdd);
-      
-      // 4. Update local state ONLY if save was successful
+
       if (success) {
         setPortfolio([...portfolio, stockToAdd]);
       }
@@ -94,33 +85,25 @@ export default function DraftPage() {
   };
 
   const handleRemoveStock = (stockSymbol) => {
-    // TODO: This only removes from the local state.
-    // For a real app, you'd need a 'removeStockFromPortfolio' function.
     setPortfolio(portfolio.filter(s => s.symbol !== stockSymbol));
   };
 
-  // --- Styles ---
-// ... (pageStyle, columnStyle, buttonStyle) ...
   const pageStyle = { padding: '20px', display: 'flex', gap: '40px' };
   const columnStyle = { flex: 1 };
-  // item-box style is now in index.css
 
-  // --- NEW: Show loading message ---
   if (loading) {
-    return <div style={pageStyle}>Loading draft...</div>
+    return <div style={pageStyle}>Loading draft...</div>;
   }
 
-  // --- NEW: Show "Draft Closed" message ---
   if (!isDraftOpen) {
     return (
       <div style={pageStyle}>
         <h2>The draft for this league is currently closed.</h2>
         <Link to={`/league/${leagueId}`}>Back to League Page</Link>
       </div>
-    )
+    );
   }
 
-  // --- Render the main page if draft is open ---
   return (
     <div style={pageStyle}>
       <div style={columnStyle}>
@@ -131,21 +114,19 @@ export default function DraftPage() {
           value={query}
           onChange={handleSearchChange}
           style={{ width: '100%', padding: '8px', fontSize: '16px' }}
-          disabled={!isDraftOpen} // <-- Disable if draft is closed
+          disabled={!isDraftOpen}
         />
         <div>
           {results.map(stock => (
             <div key={stock.symbol} className="item-box">
-              {/* --- UPDATED THIS BLOCK --- */}
               <div className="stock-info">
                 <span className="stock-name">{stock.name}</span>
                 <span className="stock-symbol">({stock.symbol})</span>
               </div>
-              {/* --- END OF UPDATE --- */}
               <button 
                 className="button"
                 onClick={() => handleAddStock(stock)}
-                disabled={!isDraftOpen} // <-- Disable if draft is closed
+                disabled={!isDraftOpen}
               >
                 Add
               </button>
@@ -157,38 +138,55 @@ export default function DraftPage() {
       <div style={columnStyle}>
         <h3 style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
           <span>Your Current Portfolio</span>
+
+          {/* NEW BUTTON THAT OPENS POPUP */}
+          <button className="button" onClick={() => setIsPopupOpen(true)}>
+            AI Advisor <span class="white-text">✨</span>
+          </button>
+
           <a href={`/league/${leagueId}`}>
             Leaderboard
           </a>
         </h3>
-        {/* We already handled loading above, so we can remove it here */}
+
+        {/* POPUP OVERLAY */}
+        {isPopupOpen && (
+          <div className="popup-overlay" onClick={() => setIsPopupOpen(false)}>
+            <div className="popup-box" onClick={(e) => e.stopPropagation()}>
+              <h3>AI Advisor Tips</h3>
+              <p>Your portfolio is strong because you hold many leading, financially solid tech companies, but it’s heavily concentrated in one sector. This means you’re positioned well for tech growth, but you’re also more vulnerable if the tech industry dips. Adding stocks from other areas like healthcare, industrials, or energy would make your overall risk lower and your portfolio more balanced. Keep your long-term winners like AAPL, MSFT, and NVDA, but consider slowly expanding into non-tech sectors for better diversification.
+</p>
+              <button onClick={() => setIsPopupOpen(false)} className="popup-close">Close</button>
+            </div>
+          </div>
+        )}
+
         <div>
           {portfolio.map(stock => (
             <div key={stock.symbol} className="item-box">
-              {/* --- UPDATED THIS BLOCK --- */}
               <div className="stock-info">
                 <span className="stock-name">{stock.name}</span>
                 <span className="stock-symbol">({stock.symbol})</span>
+                <span className="stock-percent">0.00%</span>
               </div>
-              {/* --- END OF UPDATE --- */}
               <button 
                 className="button"
                 onClick={() => handleRemoveStock(stock.symbol)}
-                disabled={!isDraftOpen} // <-- Disable if draft is closed
+                disabled={!isDraftOpen}
               >
                 Remove
               </button>
             </div>
           ))}
-          </div>
+        </div>
+
         {portfolio.length === 10 && (
-// ... (portfolio full message) ...
           <div style={{marginTop: '20px', color: 'green', fontWeight: 'bold'}}>
             Your portfolio is full!
-            
           </div>
         )}
       </div>
     </div>
   );
 }
+

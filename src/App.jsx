@@ -77,6 +77,8 @@ function App() {
 
 // --- UPDATED NAVBAR FUNCTION ---
 function NavBar() {
+  const { currentUser } = useAuth(); // Get the current user
+
   const navStyle = {
     padding: '10px 20px',
     background: 'var(--button-gradient)',
@@ -109,6 +111,12 @@ function NavBar() {
     marginLeft: '15px', // Adds space between "Profile" and "Log Out"
   };
 
+  const nameStyle = {
+    color: 'white',
+    marginRight: '15px',
+    fontWeight: 'bold',
+  };
+
   return (
     <nav style={navStyle}>
       {/* --- Left Side --- */}
@@ -118,7 +126,7 @@ function NavBar() {
       
       {/* --- Right Side --- */}
       <div style={navRightStyle}>
-        <p> </p>
+        {currentUser && <span style={nameStyle}>{currentUser.displayName}</span>}
         <Link to="/profile" style={linkStyle}>Profile</Link>
         <button style={buttonStyle} onClick={logOut}>
           Log Out
