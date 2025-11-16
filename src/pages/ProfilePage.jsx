@@ -77,7 +77,7 @@ export default function ProfilePage() {
           value={displayName}
           onChange={(e) => setDisplayName(e.target.value)}
         />
-        <button type="submit" style={buttonStyle}>
+        <button className="button" type="submit" style={buttonStyle}>
           Save Changes
         </button>
         {message && <p style={{marginTop: '15px', color: 'green'}}>{message}</p>}

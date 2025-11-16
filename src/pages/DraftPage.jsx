@@ -104,7 +104,6 @@ export default function DraftPage() {
 // ... (pageStyle, columnStyle, buttonStyle) ...
   const pageStyle = { padding: '20px', display: 'flex', gap: '40px' };
   const columnStyle = { flex: 1 };
-  const buttonStyle = { padding: '4px 8px', cursor: 'pointer' };
   // item-box style is now in index.css
 
   // --- NEW: Show loading message ---
@@ -146,7 +145,7 @@ export default function DraftPage() {
               </div>
               {/* --- END OF UPDATE --- */}
               <button 
-                style={buttonStyle} 
+                className="button"
                 onClick={() => handleAddStock(stock)}
                 disabled={!isDraftOpen} // <-- Disable if draft is closed
               >
@@ -170,7 +169,7 @@ export default function DraftPage() {
               </div>
               {/* --- END OF UPDATE --- */}
               <button 
-                style={{...buttonStyle, backgroundColor: '#fdd'}} 
+                className="button"
                 onClick={() => handleRemoveStock(stock.symbol)}
                 disabled={!isDraftOpen} // <-- Disable if draft is closed
               >

@@ -64,7 +64,6 @@ export default function HomePage() {
   // We can still use simple inline styles for layout
   const pageStyle = { padding: '20px', maxWidth: '800px', margin: '0 auto' };
   const inputStyle = { padding: '8px', marginRight: '10px' };
-  const buttonStyle = { padding: '8px 12px', cursor: 'pointer' };
   const leagueLinkStyle = {
     display: 'block',
     padding: '15px',
@@ -107,7 +106,7 @@ export default function HomePage() {
             value={createName}
             onChange={(e) => setCreateName(e.target.value)}
           />
-          <button style={buttonStyle} type="submit">Create</button>
+          <button className="button" type="submit">Create</button>
         </form>
       </div>
 
@@ -121,7 +120,7 @@ export default function HomePage() {
             value={joinCode}
             onChange={(e) => setJoinCode(e.target.value)}
           />
-          <button style={buttonStyle} type="submit">Join</button>
+          <button className="button" type="submit">Join</button>
         </form>
       </div>
     </div>

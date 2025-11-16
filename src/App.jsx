@@ -79,7 +79,7 @@ function App() {
 function NavBar() {
   const navStyle = {
     padding: '10px 20px',
-    backgroundColor: '#f0f0f0',
+    background: 'var(--button-gradient)',
     borderBottom: '1px solid #ccc',
     marginBottom: '20px',
     display: 'flex',
@@ -91,7 +91,7 @@ function NavBar() {
     margin: '0 10px',
     textDecoration: 'none',
     fontWeight: 'bold',
-    color: '#333',
+    color: 'white',
   };
 
   const navRightStyle = { // New style for the right-hand group
@@ -102,9 +102,8 @@ function NavBar() {
   const buttonStyle = {
     background: 'none',
     border: 'none',
-    color: 'blue',
+    color: 'white',
     cursor: 'pointer',
-    textDecoration: 'underline',
     fontSize: '1em',
     fontWeight: 'bold',
     marginLeft: '15px', // Adds space between "Profile" and "Log Out"
@@ -120,6 +119,7 @@ function NavBar() {
       {/* --- Right Side --- */}
       <div style={navRightStyle}>
         <Link to="/profile" style={linkStyle}>Profile</Link>
+
         <button style={buttonStyle} onClick={logOut}>
           Log Out
         </button>

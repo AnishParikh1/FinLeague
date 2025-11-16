@@ -7,7 +7,6 @@ import { createUserDocument } from '../firebaseService.js';
 export default function LoginPage() {
 
 
-  // --- REPLACE YOUR FAKE handleLogin ---
 const handleLogin = async () => {
     try {
       const result = await signInWithGoogle();
@@ -30,22 +29,11 @@ const handleLogin = async () => {
     textAlign: 'center',
   };
 
-  const buttonStyle = {
-    padding: '12px 20px',
-    fontSize: '16px',
-    fontWeight: 'bold',
-    backgroundColor: '#4285F4',
-    color: 'white',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer',
-  };
-
   return (
     <div style={pageStyle}>
-      <h1>Welcome to FinLeague 📈</h1>
+      <h1><span class="gradient-text">Welcome to FinLeague </span>📈</h1>
       <p>The fantasy league for stocks.</p>
-      <button style={buttonStyle} onClick={handleLogin}>
+      <button className="button" onClick={handleLogin}>
         Sign in with Google
       </button>
     </div>

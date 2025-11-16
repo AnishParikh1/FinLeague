@@ -3,7 +3,7 @@
   --primary: #0F7DFA;           /* Deep blue */
   --primary-light: #99FFFF;     /* Light blue */
   --text-color: #1f2937;        /* Dark gray text */
-  --button-gradient: linear-gradient(135deg, #99FFFF, #0F7DFA);
+  --button-gradient: linear-gradient(to bottom, #99FFFF, #0F7DFA);
   
   /* ----- Fonts ----- */
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
@@ -45,38 +45,63 @@ h1 {
   color: var(--primary);
 }
 
+
+.gradient-text {
+  background: linear-gradient(to bottom, #99FFFF, #0F7DFA);
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
 /* ----- Buttons ----- */
 button {
-  border-radius: 8px;
+  font-family: inherit;
+  cursor: pointer;
   border: none;
+  background: none;
+}
+
+.button {
+  display: inline-block;
+  border-radius: 8px;
   padding: 0.6em 1.2em;
   font-size: 1em;
   font-weight: 500;
-  font-family: inherit;
   color: white;
   background: var(--button-gradient);
-  cursor: pointer;
   transition: 0.25s ease;
+  text-align: center;
 }
 
-button:hover {
+.button:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  color: white;
 }
 
-button:active {
+.button:active {
   transform: scale(0.97);
 }
 
-button:focus,
-button:focus-visible {
+.button:focus,
+.button:focus-visible {
   outline: 3px solid var(--primary-light);
+}
+
+.button.disabled {
+  background: #aaa;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.button-remove {
+  background: #e53e3e;
 }
 
 .stock-info {
 display: flex;
-flex-direction: column; /* Stack name and symbol /
-align-items: flex-start; / Align them to the left */
+flex-direction: row; /* Align items horizontally */
+align-items: baseline; /* Align text properly */
 
 /* Prevent long names from breaking the layout */
 flex-grow: 1;
@@ -97,4 +122,13 @@ width: 100%; / Ensure ellipsis works */
 .stock-symbol {
 font-size: 14px;
 color: #666; /* Make the symbol a bit lighter */
+margin-left: 8px; /* Add space between name and symbol */
+}
+
+.item-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 8px;
+  border-bottom: 1px solid #e0e0e0;
 }

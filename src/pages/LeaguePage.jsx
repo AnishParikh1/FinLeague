@@ -128,21 +128,6 @@ export default function LeaguePage() {
     justifyContent: 'space-between',
     alignItems: 'center',
   };
-  const buttonStyle = {
-    padding: '10px 15px',
-    fontSize: '16px',
-    cursor: 'pointer',
-    textDecoration: 'none',
-    backgroundColor: '#007bff',
-    color: 'white',
-    borderRadius: '5px'
-  };
-  // NEW: Disabled button style
-  const disabledButtonStyle = {
-    ...buttonStyle,
-    backgroundColor: '#aaa',
-    cursor: 'not-allowed',
-  };
   // NEW: Admin panel style
   const adminBoxStyle = {
     border: '2px solid #007bff',
@@ -170,9 +155,7 @@ export default function LeaguePage() {
         <h2>{leagueData.name} Leaderboard</h2>
         <Link 
           to={`/league/${leagueId}/draft`} 
-          // Disable link if draft is not open
-          style={isDraftOpen ? buttonStyle : disabledButtonStyle}
-          // Prevent click if disabled
+          className={`button ${!isDraftOpen ? 'disabled' : ''}`}
           onClick={(e) => !isDraftOpen && e.preventDefault()}
         >
           Go to Draft
@@ -187,17 +170,17 @@ export default function LeaguePage() {
         <div style={adminBoxStyle}>
           <h3>Commissioner Controls</h3>
           {leagueData.status === 'PRE_DRAFT' && (
-            <button style={buttonStyle} onClick={() => handleStatusChange('DRAFT_OPEN')}>
+            <button className="button" onClick={() => handleStatusChange('DRAFT_OPEN')}>
               Open Draft
             </button>
           )}
           {leagueData.status === 'DRAFT_OPEN' && (
-            <button style={buttonStyle} onClick={() => handleStatusChange('DRAFT_CLOSED')}>
+            <button className="button" onClick={() => handleStatusChange('DRAFT_CLOSED')}>
               Close Draft
             </button>
           )}
           {leagueData.status === 'DRAFT_CLOSED' && (
-            <button style={buttonStyle} onClick={() => handleStatusChange('DRAFT_OPEN')}>
+            <button className="button" onClick={() => handleStatusChange('DRAFT_OPEN')}>
               Re-Open Draft
             </button>
           )}
