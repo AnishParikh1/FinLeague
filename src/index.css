@@ -1,9 +1,9 @@
 :root {
   /* ----- Colors ----- */
-  --primary: #00FFFF;           /* Deep blue */
+  --primary: #0F7DFA;           /* Deep blue */
   --primary-light: #99FFFF;     /* Light blue */
   --text-color: #1f2937;        /* Dark gray text */
-  --button-gradient: linear-gradient(135deg, #99FFFF, #00FFFF);
+  --button-gradient: linear-gradient(135deg, #99FFFF, #0F7DFA);
   
   /* ----- Fonts ----- */
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
