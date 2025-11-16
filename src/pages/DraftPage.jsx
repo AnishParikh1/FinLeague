@@ -107,10 +107,10 @@ export default function DraftPage() {
   return (
     <div style={pageStyle}>
       <div style={columnStyle}>
-        <h2>Draft Your Portfolio ({portfolio.length}/10 Stocks)</h2>
+        <h2 style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>Draft Portfolio <span >{portfolio.length}/10</span></h2>
         <input
           type="text"
-          placeholder="Search for a stock..."
+          placeholder="Search"
           value={query}
           onChange={handleSearchChange}
           style={{ width: '100%', padding: '8px', fontSize: '16px' }}
@@ -137,7 +137,7 @@ export default function DraftPage() {
 
       <div style={columnStyle}>
         <h3 style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-          <span>Your Current Portfolio</span>
+          <span>Current Portfolio</span>
 
           {/* NEW BUTTON THAT OPENS POPUP */}
           <button className="button" onClick={() => setIsPopupOpen(true)}>
@@ -168,6 +168,7 @@ export default function DraftPage() {
                 <span className="stock-name">{stock.name}</span>
                 <span className="stock-symbol">({stock.symbol})</span>
                 <span className="stock-percent">0.00%</span>
+                
               </div>
               <button 
                 className="button"

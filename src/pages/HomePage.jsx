@@ -88,9 +88,11 @@ export default function HomePage() {
             <p class="gradient-text">You haven't joined any leagues yet.</p>
           ) : (
             myLeagues.map(league => (
+              <div>
               <Link to={`/league/${league.id}`} key={league.id} class="gradient-text">
                 {league.name}
               </Link>
+              </div>
             ))
           )}
         </div>
