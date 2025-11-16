@@ -13,12 +13,12 @@ import {
   getDoc, 
   addDoc, 
   collection, 
-  updateDoc, 
+  updateDoc, // Added this import
   arrayUnion, 
   serverTimestamp,
   getDocs,
-  query,  // <-- ADDED
-  where   // <-- ADDED
+  query,
+  where
 } from 'firebase/firestore';
 
 // 1. YOUR FIREBASE CONFIG
@@ -37,7 +37,6 @@ export const auth = getAuth(app);
 export const db = getFirestore(app);
 
 // 3. AUTH FUNCTIONS
-// ... (signInWithGoogle, logOut) ...
 const provider = new GoogleAuthProvider();
 export const signInWithGoogle = () => {
   return signInWithPopup(auth, provider);
@@ -48,7 +47,6 @@ export const logOut = () => {
 
 
 // 4. USER FUNCTIONS
-// ... (createUserDocument) ...
 export const createUserDocument = async (user) => {
   if (!user) return;
   const userRef = doc(db, 'users', user.uid);
@@ -69,9 +67,29 @@ export const createUserDocument = async (user) => {
   }
 };
 
+/**
+ * Updates a user's profile information in the 'users' collection.
+ * @param {string} userId - The user's UID.
+ * @param {object} data - The data to update (e.g., { displayName: "New Name" }).
+ */
+export const updateUserProfile = async (userId, data) => {
+  if (!userId) return;
+
+  try {
+    const userRef = doc(db, 'users', userId);
+    await updateDoc(userRef, data); // Updates the document
+    console.log("User profile updated!");
+    return true;
+  } catch (error) {
+    console.error("Error updating user profile:", error);
+    return false;
+  }
+};
+
 
 // 5. LEAGUE & PORTFOLIO FUNCTIONS
-// ... (createLeague, joinLeague, addStockToPortfolio, getLeaguePortfolios) ...
+
+// THIS LINE (86) IS THE FIX:
 export const createLeague = async (leagueName, user) => {
   if (!leagueName || !user) return;
   try {

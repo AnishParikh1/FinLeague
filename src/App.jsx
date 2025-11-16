@@ -6,6 +6,7 @@ import LoginPage from './pages/LoginPage.jsx';
 import HomePage from './pages/HomePage.jsx';
 import LeaguePage from './pages/LeaguePage.jsx';
 import DraftPage from './pages/DraftPage.jsx';
+import ProfilePage from './pages/ProfilePage.jsx';
 // 1. Import the hook
 import { useAuth } from './AuthContext.jsx';
 
@@ -108,6 +109,7 @@ function NavBar() {
         <Link to="/" style={linkStyle}>Home</Link>
         {/* You'll need to make this link dynamic later */}
         <Link to="/league/test123" style={linkStyle}>My League</Link>
+        <Link to="/profile" style={linkStyle}>Profile</Link>
       </div>
       
       {/* ADD THIS BUTTON */}

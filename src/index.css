@@ -52,6 +52,29 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+/* Add these new classes to the bottom of src/index.css */
+
+.form-box {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  background-color: #f9f9f9; /* <-- CHANGE THIS COLOR for form boxes */
+}
+
+.item-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  border: 1px solid #eee;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 10px;
+  background-color: #ffffff; /* <-- CHANGE THIS COLOR for list items */
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;

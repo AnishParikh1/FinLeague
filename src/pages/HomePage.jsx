@@ -1,60 +1,57 @@
-import React, { useState, useEffect } from 'react'; // 1. Import useEffect
-import { useNavigate, Link } from 'react-router-dom'; // 2. Import Link
+import React, { useState, useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 // 3. Import from 'firebaseService.js' (singular)
 import { auth, createLeague, joinLeague, getUserLeagues } from '../firebaseService.js';
-import { useAuth } from '../AuthContext.jsx'; // 4. Import useAuth
+import { useAuth } from '../AuthContext.jsx';
 
 export default function HomePage() {
   const [createName, setCreateName] = useState('');
   const [joinCode, setJoinCode] = useState('');
-  const [myLeagues, setMyLeagues] = useState([]); // 5. State for leagues
+  const [myLeagues, setMyLeagues] = useState([]);
   const [loading, setLoading] = useState(true);
+  
   const navigate = useNavigate();
-  const { currentUser } = useAuth(); // 6. Get the current user
+  const { currentUser } = useAuth(); // Get the logged-in user
 
-  // 7. This effect runs on page load
+  // Fetch the user's leagues when the component loads
   useEffect(() => {
     if (currentUser) {
-      const fetchLeagues = async () => {
-        setLoading(true);
-        const leagues = await getUserLeagues(currentUser.uid);
+      getUserLeagues(currentUser.uid).then(leagues => {
         setMyLeagues(leagues);
         setLoading(false);
-      };
-      fetchLeagues();
+      });
     }
   }, [currentUser]); // Re-run if the user changes
 
-  // 2. Update the 'Create League' function
+  // --- Placeholder Functions ---
   const handleCreateLeague = async (e) => {
     e.preventDefault();
-    const user = auth.currentUser;
-    if (user && createName) {
+    if (currentUser && createName) {
       try {
-        const newLeagueId = await createLeague(createName, user);
+        const newLeagueId = await createLeague(createName, currentUser);
         if (newLeagueId) {
           alert(`League created! Your invite code is: ${newLeagueId}`);
-          navigate(`/league/${newLeagueId}`); // Redirect to the new league
+          navigate(`/league/${newLeagueId}`); // Redirect to the real league
+        } else {
+          alert('Failed to create league.');
         }
       } catch (error) {
         console.error("Error creating league:", error);
-        alert("Failed to create league.");
+        alert('Failed to create league.');
       }
     }
   };
 
-  // 3. Update the 'Join League' function
   const handleJoinLeague = async (e) => {
     e.preventDefault();
-    const user = auth.currentUser;
-    if (user && joinCode) {
+    if (currentUser && joinCode) {
       try {
-        const success = await joinLeague(joinCode, user);
+        const success = await joinLeague(joinCode, currentUser);
         if (success) {
-          alert('Successfully joined league!');
+          alert('Joined league!');
           navigate(`/league/${joinCode}`); // Redirect to the joined league
         } else {
-          alert('Failed to join league. Check the invite code.');
+          alert('Failed to join league. Check the code?');
         }
       } catch (error) {
         console.error("Error joining league:", error);
@@ -63,31 +60,27 @@ export default function HomePage() {
     }
   };
 
-  // --- Styles (these can stay the same) ---
-  const pageStyle = { padding: '20px' };
-  const formStyle = {
-    border: '1px solid #ccc',
-    borderRadius: '8px',
-    padding: '20px',
-    marginBottom: '20px',
-  };
-  const inputStyle = { padding: '8px', marginRight: '10px', minWidth: '200px' };
-  const buttonStyle = { padding: '8px 12px', cursor: 'pointer', background: '#007bff', color: 'white', border: 'none', borderRadius: '4px' };
+  // --- Styles ---
+  // We can still use simple inline styles for layout
+  const pageStyle = { padding: '20px', maxWidth: '800px', margin: '0 auto' };
+  const inputStyle = { padding: '8px', marginRight: '10px' };
+  const buttonStyle = { padding: '8px 12px', cursor: 'pointer' };
   const leagueLinkStyle = {
     display: 'block',
-    padding: '12px 15px',
-    border: '1px solid #eee',
+    padding: '15px',
+    margin: '10px 0',
+    backgroundColor: '#fff',
+    border: '1px solid #ddd',
     borderRadius: '5px',
     textDecoration: 'none',
-    color: '#333',
+    color: '#007bff',
     fontWeight: 'bold',
-    marginBottom: '10px',
   };
+
 
   return (
     <div style={pageStyle}>
       <h2>Your Leagues</h2>
-      {/* 8. Render the list of leagues */}
       {loading ? (
         <p>Loading your leagues...</p>
       ) : (
@@ -104,7 +97,7 @@ export default function HomePage() {
         </div>
       )}
 
-      <div style={formStyle}>
+      <div className="form-box">
         <h3>Create a New League</h3>
         <form onSubmit={handleCreateLeague}>
           <input
@@ -118,7 +111,7 @@ export default function HomePage() {
         </form>
       </div>
 
-      <div style={formStyle}>
+      <div className="form-box">
         <h3>Join an Existing League</h3>
         <form onSubmit={handleJoinLeague}>
           <input
