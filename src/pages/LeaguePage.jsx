@@ -147,7 +147,7 @@ export default function LeaguePage() {
   }
   
   const isCommissioner = currentUser.uid === leagueData.commissionerId;
-  const isDraftOpen = leagueData.status === 'DRAFT_OPEN';
+  const isDraftOpen = leagueData.status === 'Open';
 
   return (
     <div style={pageStyle}>
@@ -162,25 +162,25 @@ export default function LeaguePage() {
         </Link>
       </div>
       
-      <p>This page is for league: <strong>{leagueId}</strong></p>
-      <p><strong>Draft Status:</strong> {leagueData.status}</p>
+      <p><strong>League Code: </strong>{leagueId}</p>
+      <p><strong>Draft Status:</strong> <span >{leagueData.status}</span></p>
 
       {/* --- NEW: Commissioner Admin Panel --- */}
       {isCommissioner && (
         <div style={adminBoxStyle}>
           <h3>Commissioner Controls</h3>
-          {leagueData.status === 'PRE_DRAFT' && (
-            <button className="button" onClick={() => handleStatusChange('DRAFT_OPEN')}>
+          {leagueData.status === 'Pre-Draft' && (
+            <button className="button" onClick={() => handleStatusChange('Open')}>
               Open Draft
             </button>
           )}
-          {leagueData.status === 'DRAFT_OPEN' && (
-            <button className="button" onClick={() => handleStatusChange('DRAFT_CLOSED')}>
+          {leagueData.status === 'Open' && (
+            <button className="button" onClick={() => handleStatusChange('Closed')}>
               Close Draft
             </button>
           )}
-          {leagueData.status === 'DRAFT_CLOSED' && (
-            <button className="button" onClick={() => handleStatusChange('DRAFT_OPEN')}>
+          {leagueData.status === 'Closed' && (
+            <button className="button" onClick={() => handleStatusChange('Open')}>
               Re-Open Draft
             </button>
           )}

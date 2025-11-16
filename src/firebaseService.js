@@ -99,7 +99,7 @@ export const createLeague = async (leagueName, user) => {
       commissionerId: user.uid,
       members: [user.uid],
       createdAt: serverTimestamp(),
-      status: 'PRE_DRAFT' // <-- ADD THIS: Set initial draft status
+      status: 'Pre-Draft' // <-- ADD THIS: Set initial draft status
     });
     return leagueRef.id; // This ID is the "Invite Code"
   } catch (error) {
@@ -133,7 +133,7 @@ export const addStockToPortfolio = async (leagueId, userId, stock) => {
   try {
     // 1. Check the league's status BEFORE adding a stock
     const leagueSnap = await getDoc(leagueRef);
-    if (!leagueSnap.exists() || leagueSnap.data().status !== 'DRAFT_OPEN') {
+    if (!leagueSnap.exists() || leagueSnap.data().status !== 'Open') {
       alert("The draft is not currently open!");
       return false; // Stop the function
     }

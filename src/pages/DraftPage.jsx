@@ -22,7 +22,7 @@ export default function DraftPage() {
         
         // 1. Fetch League Status
         const leagueData = await getLeagueDetails(leagueId);
-        if (leagueData && leagueData.status === 'DRAFT_OPEN') {
+        if (leagueData && leagueData.status === 'Open') {
           setIsDraftOpen(true);
         } else {
           setIsDraftOpen(false);
@@ -96,7 +96,6 @@ export default function DraftPage() {
   const handleRemoveStock = (stockSymbol) => {
     // TODO: This only removes from the local state.
     // For a real app, you'd need a 'removeStockFromPortfolio' function.
-    alert("Note: This only removes from the local view for now.");
     setPortfolio(portfolio.filter(s => s.symbol !== stockSymbol));
   };
 
@@ -156,10 +155,11 @@ export default function DraftPage() {
       </div>
 
       <div style={columnStyle}>
-        <h3>Your Current Portfolio <span style="float;right;">
-          <Link to={`/league/${leagueId}`} style={{marginLeft: '10px'}}>
-              See Leaderboard
-          </Link></span>
+        <h3 style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+          <span>Your Current Portfolio</span>
+          <a href={`/league/${leagueId}`}>
+            Leaderboard
+          </a>
         </h3>
         {/* We already handled loading above, so we can remove it here */}
         <div>

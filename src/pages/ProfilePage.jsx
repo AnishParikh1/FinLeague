@@ -68,13 +68,13 @@ export default function ProfilePage() {
       <h2>Manage Your Profile</h2>
       <form onSubmit={handleSubmit} className="form-box">
         <label htmlFor="displayName" style={{fontWeight: 'bold', marginBottom: '5px', display: 'block'}}>
-          Your Display Name
+          Your Display Name - {displayName}
         </label>
         <input
           id="displayName"
           type="text"
           style={inputStyle}
-          value={displayName}
+          placeholder="Name"
           onChange={(e) => setDisplayName(e.target.value)}
         />
         <button className="button" type="submit" style={buttonStyle}>
