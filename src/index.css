@@ -72,3 +72,29 @@ button:focus,
 button:focus-visible {
   outline: 3px solid var(--primary-light);
 }
+
+.stock-info {
+display: flex;
+flex-direction: column; /* Stack name and symbol /
+align-items: flex-start; / Align them to the left */
+
+/* Prevent long names from breaking the layout */
+flex-grow: 1;
+flex-shrink: 1;
+min-width: 0;
+}
+
+.stock-name {
+font-weight: 500;
+
+/* Add '...' if a stock name is too long /
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+width: 100%; / Ensure ellipsis works */
+}
+
+.stock-symbol {
+font-size: 14px;
+color: #666; /* Make the symbol a bit lighter */
+}

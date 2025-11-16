@@ -140,7 +140,12 @@ export default function DraftPage() {
 // ... (results.map) ...
           {results.map(stock => (
             <div key={stock.symbol} className="item-box">
-              <span>{stock.name} ({stock.symbol})</span>
+              {/* --- UPDATED THIS BLOCK --- */}
+              <div className="stock-info">
+                <span className="stock-name">{stock.name}</span>
+                <span className="stock-symbol">({stock.symbol})</span>
+              </div>
+              {/* --- END OF UPDATE --- */}
               <button 
                 style={buttonStyle} 
                 onClick={() => handleAddStock(stock)}
@@ -160,7 +165,12 @@ export default function DraftPage() {
 // ... (portfolio.map) ...
           {portfolio.map(stock => (
             <div key={stock.symbol} className="item-box">
-              <span>{stock.name} ({stock.symbol})</span>
+              {/* --- UPDATED THIS BLOCK --- */}
+              <div className="stock-info">
+                <span className="stock-name">{stock.name}</span>
+                <span className="stock-symbol">({stock.symbol})</span>
+              </div>
+              {/* --- END OF UPDATE --- */}
               <button 
                 style={{...buttonStyle, backgroundColor: '#fdd'}} 
                 onClick={() => handleRemoveStock(stock.symbol)}
